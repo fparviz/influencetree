@@ -2,12 +2,28 @@
 # -*- coding: utf-8 -*-
 import json
 
-authors_influence_graph = {
-     "Noam Chomsky":["Ludwig Wittgenstein", "George Orwell", " Bertrand Russell", "Alan Turing" ],
-     "Ludwig Wittgenstein": ["Soren Kierkegaard", "Bertrand Russell", "Gottlob Frege", "Fyodor Dostoyevsky", "Leo Tolstoy"],
+authors_influence_graph = [
+    {
+       "name":"Noam Chomsky",
+       "children":[
+                   {"name":"Ludwig Wittgenstein"},
+                   {"name":"George Orwell"},
+                   {"name":"Bertrand Russell"},
+                   {"name":"Alan Turing"}
+                  ]
+    },
+    {
+      "name":"Ludwig Wittgenstein",
+      "children":[
+                  {"name":"Soren Kierkegaard"},
+                  {"name":"Bertrand Russell"},
+                  {"name":"Gottlob Frege"},
+                  {"name":"Fyodor Dostoyevsky"},
+                  {"name":"Leo Tolstoy"}
+                 ]
        #"Martin Heidegger":["Hubert Dreyfus", "Michel Foucault" ],
-
     }
+]
 
 
 authors_descriptions = {  "Martin Heidegger":{ "dob": "26 September 1889 – 26 May 1976",
@@ -58,7 +74,7 @@ authors_descriptions = {  "Martin Heidegger":{ "dob": "26 September 1889 – 26 
                                          }
 
 json.dump(authors_influence_graph, open("authors_influence_graph_demo.json", 'w+'))
-json.dump(authors_descriptions, open("authors_descriptions.json_demo", 'w+'))
+json.dump(authors_descriptions, open("authors_descriptions_demo.json", 'w+'))
 
 
 
