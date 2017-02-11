@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css?family=Raleway:300" rel="stylesheet">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+<link rel="import" href="bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<script src="//d3js.org/d3.v3.min.js"></script>
+
+<style is="custom-style">
+  body {
+    margin: 0;
+    font-family: 'Roboto', 'Noto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #f1f1f1;
+  }
+  app-toolbar {
+    background-color: #4285f4;
+    color: #fff;
+  }
+  paper-icon-button + [main-title] {
+    margin-left: 24px;
+  }
+  paper-progress {
+    display: block;
+    width: 100%;
+    --paper-progress-active-color: rgba(255, 255, 255, 0.5);
+    --paper-progress-container-color: transparent;
+  }
+  app-header {
+    @apply(--layout-fixed-top);
+    color: #fff;
+    --app-header-background-rear-layer: {
+      background-color: #ef6c00;
+    };
+  }
+  app-drawer {
+    --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+    --app-drawer-content-container: {
+      background-color: #B0BEC5;
+    }
+  }
+  sample-content {
+    padding-top: 64px;
+  }
+
+  #tooltip {
+        position: absolute;
+        width: 100px;
+        height: auto;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+}
+
+#tooltip.hidden {
+        display: none;
+}
+
+#tooltip p {
+        margin: 0;
+        font-family: 'Raleway', sans-serif;
+        font-size: 20px;
+        line-height: 20px;
+}
+.heading {
+  font-family: 'Raleway', sans-serif;
+  font-size: 50px;
+  font-weight: bolder;
+  text-align: center;
+
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 4.5px;
+}
+
+
+.node text {
+  font: 100px , sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+</style>
+
+
+<body>
+
+<app-header style="height: 96px;" condenses>
+  <app-toolbar style="height: 64px;">
+    <div class="heading" main-title>Influence Tree</div>
+  </app-toolbar>
+</app-header>
+
+<div id="tooltip" class="hidden">
+        <p>Hover Test</p>
+
+</div>
+
+
+<script>
+
+var margin = {top: 50, right: 100, bottom: 300, left: 400},
+    width = 1500 - margin.right - margin.left,
+    height = 1200 - margin.top - margin.bottom;
+
+//var margin = {top: 20, right: 120, bottom: 20, left: 120},
+//    width = 960 - margin.right - margin.left,
+//    height = 800 - margin.top - margin.bottom;
+
+var i = 0,
+    duration = 750,
+    root;
+
+var tree = d3.layout.tree()
+    .size([height, width]);
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("authors_influence_graph_demo.json", function(error, flare) {
+  if (error) throw error;
+
+  root = flare;
+  root.x0 = height / 2;
+  root.y0 = 0;
+
+  function collapse(d) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(collapse);
+      d.children = null;
+    }
+  }
+
+  root.children.forEach(collapse);
+  update(root);
+});
+
+d3.select(self.frameElement).style("height", "10px");
+//d3.select(self.frameElement).style("height", "800px");
+
+function update(source) {
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+      links = tree.links(nodes);
+
+  // Normalize for fixed-depth.
+  nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+  // Update the nodes…
+  var node = svg.selectAll("g.node")
+      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+  // Enter any new nodes at the parent's previous position.
+  var nodeEnter = node.enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+      .on("click", click)
+      // this needs fixing of the text to appear next to the circle
+      .on("mouseover", function(d) {
+      //Get this circle's x/y values, then augment for the tooltip
+      //var xPosition = parseFloat(d3.select(this).attr("root.x0"));
+      //var yPosition = parseFloat(d3.select(this).attr("root.y0"));
+
+      //Update the tooltip position and value
+      d3.select("#tooltip")
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY - 28) + "px")
+        .select("#value")
+        .text(d);
+
+      //Show the tooltip
+      d3.select("#tooltip").classed("hidden", false);
+    })
+
+    .on("mouseout", function() {
+    //Hide the tooltip
+    d3.select("#tooltip").classed("hidden", true);
+    });
+
+  nodeEnter.append("circle")
+      .attr("r", 1e-6)
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+  nodeEnter.append("text")
+      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+      .text(function(d) { return d.name; })
+      .style("fill-opacity", 1e-6);
+
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+  nodeUpdate.select("circle")
+      .attr("r", 4.5)
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+  nodeUpdate.select("text")
+      .style("fill-opacity", 1);
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+      .remove();
+
+  nodeExit.select("circle")
+      .attr("r", 1e-6);
+
+  nodeExit.select("text")
+      .style("fill-opacity", 1e-6);
+
+  // Update the links…
+  var link = svg.selectAll("path.link")
+      .data(links, function(d) { return d.target.id; });
+
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("path", "g")
+      .attr("class", "link")
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: source.y0};
+        return diagonal({source: o, target: o});
+      });
+
+  // Transition links to their new position.
+  link.transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+      .duration(duration)
+      .attr("d", function(d) {
+        var o = {x: source.x, y: source.y};
+        return diagonal({source: o, target: o});
+      })
+      .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+    d.x0 = d.x;
+    d.y0 = d.y;
+  });
+}
+
+// Toggle children on click.
+function click(d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+  update(d);
+}
+
+// Create Event Handlers for mouse
+      function handleMouseOver(d, i) {  // Add interactivity
+
+            // Use D3 to select element, change color and size
+            d3.select(this).attr({
+              fill: "red",
+            });
+
+            // Specify where to put label of text
+            svg.append("text");
+          }
+
+</script>
+</body>
