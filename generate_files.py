@@ -6,7 +6,14 @@ authors_influence_graph = [
     {
        "name":"Noam Chomsky",
        "children":[
-                   {"name":"Ludwig Wittgenstein"},
+                   {"name":"Ludwig Wittgenstein",
+                   "children":[
+                               {"name":"Soren Kierkegaard"},
+                               {"name":"Bertrand Russell"},
+                               {"name":"Gottlob Frege"},
+                               {"name":"Fyodor Dostoyevsky"},
+                               {"name":"Leo Tolstoy"}
+                               ]},
                    {"name":"George Orwell"},
                    {"name":"Bertrand Russell"},
                    {"name":"Alan Turing"}
