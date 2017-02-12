@@ -110,7 +110,7 @@
 
 
 <body>
-  
+
 <app-header style="height: 96px;" condenses>
   <app-toolbar style="height: 64px;">
   <paper-input id="author_name" type="text" list="authors" class="input" label="Search" type="search" keyEventTarget></paper-input>
@@ -126,7 +126,7 @@
 </body>
 
 <script>
-  
+
 $.ajax({type     : 'GET',
          url      : "datalist.html",
          dataType : "html",
@@ -147,7 +147,23 @@ $('#author_name').on('keyup', function () {
                   }
         })
         .done(function(data) {
-            console.log(data)
+
+            console.log(data["influenced"])
+
+            root = data["influenced"];
+            root.x0 = height / 2;
+            root.y0 = 0;
+
+            function collapse(d) {
+              if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+              }
+            }
+
+            root.children.forEach(collapse);
+            update(root);
             });
       }
 })
@@ -158,7 +174,7 @@ $('#author_name').on('keyup', function () {
 var margin = {top: 20, right: 100, bottom: 100, left: 400},
 
     width = 1500 - margin.right - margin.left,
-    height = 800 - margin.top - margin.bottom;
+    height = 1500 - margin.top - margin.bottom;
 
 //var margin = {top: 20, right: 120, bottom: 20, left: 120},
 //    width = 960 - margin.right - margin.left,
@@ -180,6 +196,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+/*
 d3.json("authors_influence_graph_demo.json", function(error, flare) {
   if (error) throw error;
 
@@ -198,8 +215,11 @@ d3.json("authors_influence_graph_demo.json", function(error, flare) {
   root.children.forEach(collapse);
   update(root);
 });
+*/
 
 d3.select(self.frameElement).style("height", "10px");
+
+
 //d3.select(self.frameElement).style("height", "800px");
 
 function update(source) {
@@ -227,7 +247,7 @@ function update(source) {
       //var yPosition = parseFloat(d3.select(this).attr("root.y0"));
         d3.select(this).attr({
           "font-weight": "bold",
-          "font-size": "30px"
+          "font-size": "36px"
         })
 
       //Update the tooltip position and value
@@ -259,7 +279,8 @@ function update(source) {
 
   nodeEnter.append("text")
       .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-      .attr("dy", ".35em")
+      .attr("dy", ".01em")
+      .attr("dx", ".1em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { return d.name; })
       .style("fill-opacity",1e-6);
@@ -269,18 +290,29 @@ var config = {
 }
 
 
-var defs = svg.append('svg:defs');
-  defs.append("svg:pattern")
-    .attr("id", "image")
-    .attr("width", config.avatar_size)
-    .attr("height", config.avatar_size)
-    .attr("patternUnits", "userSpaceOnUse")
-    .append("svg:image")
-    .attr("xlink:href", 'images/man1.jpg')
-    .attr("width", config.avatar_size)
-    .attr("height", config.avatar_size)
-    .attr("x", 0)
-    .attr("y", 0);
+console.log(source)
+source["children"].forEach(function(i){
+  //console.log(i, i["img"].split('./')[1])
+    if ((i["img"] != undefined) && (i["img"] != "")){
+
+      console.log(i["img"].split('/').slice(-1)[0].split(".")[0])
+    var defs = svg.append('svg:defs');
+      defs.append("svg:pattern")
+        .attr("id", i["img"].split('/').slice(-1)[0].split(".")[0])
+        .attr("width", config.avatar_size)
+        .attr("height", config.avatar_size)
+        .attr("patternUnits", "userSpaceOnUse")
+        .append("svg:image")
+        .attr("xlink:href", i["img"].split('./')[1])
+        .attr("width", config.avatar_size)
+        .attr("height", config.avatar_size)
+        .attr("x", 0)
+        .attr("y", 0);
+
+   }
+ })
+
+
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()
       .duration(duration)
@@ -294,8 +326,17 @@ var defs = svg.append('svg:defs');
     .attr("r", config.avatar_size/2)
     .style("fill", "#fff")
     //.attr("r", 30)
-    .style("fill", "url(#image)");
-      //.style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+    //.style("fill", "url(#image)");
+   .style("fill", function(d) {
+            //console.log(d["img"], "url(#"+d["img"].split('./')[1] +")")
+            if ((d["img"] != undefined) && (d["img"] != "")){
+              return "url(#"+d["img"].split('/').slice(-1)[0].split(".")[0] +")"
+            }else{
+              return "lightsteelblue"
+            }
+          });
+
+   // .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
