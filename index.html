@@ -3,6 +3,8 @@
 <link href="https://fonts.googleapis.com/css?family=Raleway:300" rel="stylesheet">
 <link rel="import" href="bower_components/polymer/polymer.html">
 <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+<link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
@@ -58,8 +60,12 @@
   font-family: 'Raleway', sans-serif;
   font-size: 50px;
   font-weight: bolder;
-  text-align: center;
+  text-align: right;
 
+}
+.input {
+  text-align: left;
+  stroke: white;
 }
 
 .node {
@@ -89,14 +95,15 @@
 
 <app-header style="height: 96px;" condenses>
   <app-toolbar style="height: 64px;">
+  <paper-input class="input" label="Input label" required auto-validate error-message="Need to add a Search Item">></paper-input>
     <div class="heading" main-title>Influence Tree</div>
   </app-toolbar>
 </app-header>
 
 <div id="tooltip" class="hidden">
-        <p>Hover Test</p>
-
+ <p>Bio and Books</p>
 </div>
+
 </body>
 
 <script>
