@@ -98,7 +98,7 @@
 
 .node text {
   font-family: 'Raleway', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .link {
@@ -310,15 +310,15 @@ function update(source) {
       .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
   nodeEnter.append("text")
-      .attr("x", function(d) { return d.children || d._children ? -5 : 10; })
-      .attr("dy", ".01em")
-      .attr("dx", ".1em")
+      .attr("x", function(d) { return d.children || d._children ? -5 : 30; })
+      //.attr("dy", "1em")
+      //.attr("dx", ".2em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { return d.name; })
       .style("fill-opacity",1e-6);
 
     var config = {
-        "avatar_size" : 35
+        "avatar_size" : 30
     }
 
 
@@ -360,8 +360,8 @@ function update(source) {
 
   //This is the radius of the node circle
   nodeUpdate.select("circle")
-    .attr("cx", config.avatar_size/2)
-    .attr("cy", config.avatar_size/2)
+    //.attr("cx", config.avatar_size/2)
+    //.attr("cy", config.avatar_size/2)
     .attr("r", config.avatar_size/2)
     .style("fill", "#fff")
     //.attr("r", 30)
