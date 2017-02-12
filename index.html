@@ -14,6 +14,7 @@
 <link href="css/bootstrap.min.css" rel="stylesheet">
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
+
 <script src="js/bootstrap.min.js"></script>
 
 <style is="custom-style">
@@ -108,10 +109,10 @@
 
 
 <body>
-
+  
 <app-header style="height: 96px;" condenses>
   <app-toolbar style="height: 64px;">
-  <paper-input class="input" label="Input label" required auto-validate error-message="Need to add a Search Item">></paper-input>
+  <paper-input class="input" type="text" list="authors" label="Input label" required auto-validate error-message="Need to add a Search Item">></paper-input>
     <div class="heading" main-title>Influence Tree</div>
   </app-toolbar>
 </app-header>
@@ -124,7 +125,14 @@
 </body>
 
 <script>
-
+  
+$.ajax({type     : 'GET',
+         url      : "datalist.html",
+         dataType : "html",
+         })
+         .done(function(data) {
+               $("<div>").append(data).appendTo($("body"))
+               });
 
 $.ajax({type     : 'GET',
        url      : "/handleRequest.py",
