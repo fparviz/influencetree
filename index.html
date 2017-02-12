@@ -50,7 +50,7 @@
 
   #tooltip {
         position: absolute;
-        width: 100px;
+        width: 700px;
         height: auto;
         padding: 10px;
         background-color: white;
@@ -119,8 +119,7 @@
   </app-toolbar>
 </app-header>
 
-<div id="tooltip" class="hidden">
- <p>Bio and Books</p>
+<div id="tooltip" class="hidden">Test
 </div>
 
 
@@ -311,6 +310,11 @@ source["children"].forEach(function(i){
         .attr("y", 0);
 
    }
+    if ((i["bio"] != undefined) && (i["bio"] != "")){
+      console.log(i["bio"]);
+      document.getElementById("tooltip").innerHTML=i["bio"];
+    }
+
  })
 
 
