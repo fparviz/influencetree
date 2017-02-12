@@ -14,9 +14,9 @@ data = pd.read_csv(FILE, header=0)
 #print data
 data = data.fillna("")
 
-#data["pictureQueryURL"] = "https://en.wikipedia.org/w/api.php?action=query&pageids="+data["wikipageid"].astype(str)+"&pithumbsize=300&prop=pageimages&format=json&pilimit=2"
+data["pictureQueryURL"] = "https://en.wikipedia.org/w/api.php?action=query&pageids="+data["wikipageid"].astype(str)+"&pithumbsize=300&prop=pageimages&format=json&pilimit=2"
 
-data["pictureQueryURL"] = "https://en.wikipedia.org/w/api.php?action=query&pageids="+data["wikipageid"].astype(str)+"&prop=pageimages&format=json&pilimit=2"
+#data["pictureQueryURL"] = "https://en.wikipedia.org/w/api.php?action=query&pageids="+data["wikipageid"].astype(str)+"&prop=pageimages&format=json&pilimit=2"
 
 data["dob"] = data["birth"] + " - " + data["death"]
 
@@ -40,7 +40,7 @@ def getPictures(data):
     id = row["wikipageid"]
     print id, url
     
-    if os.path.exists("./thumbnails/"+str(id)+".jpg"):
+    if os.path.exists("./thumbnails-300/"+str(id)+".jpg"):
       continue
     
     r = requests.get(url)
@@ -51,7 +51,7 @@ def getPictures(data):
       #print thumbnail_url
 
       r2 = requests.get(thumbnail_url)
-      with open("./thumbnails/"+str(id)+".jpg", 'wb') as fd:
+      with open("./thumbnails-300/"+str(id)+".jpg", 'wb') as fd:
         for chunk in r2.iter_content(chunk_size=128):
           fd.write(chunk)
 
@@ -65,4 +65,17 @@ def getPictures(data):
 
     print resp
 
-getPictures(data)
+#getPictures(data)
+
+def createAutocomplete(data):
+  out = "<datalist id=\"authors\">\n"
+  for row in data["author"]:
+    out += "<option value=\""+ row+"\">\n"
+  out +="</datalist>\n"
+
+  fp = open("datalist.html","w+")
+  fp.write(out)
+
+createAutocomplete(data)
+
+
