@@ -2,6 +2,8 @@
 
 import pandas as pd
 import json
+import sys, traceback
+
 AUTHOR_INFO = "./data/authors_info_processed.csv"
 INFLUENCED = "./data/influenced.csv"
 INFLUENCEDBY = "./data/influencedBy.csv"
@@ -30,14 +32,27 @@ def buildInfluenceTree(data,author, influenced_list, influencedBy_list):
       img = "./thumbnails-300/"+str(author_data["wikipageid"].iloc[0])+".jpg"
       bio = author_data["bio"].iloc[0]
     except:
+      exc_type, exc_value, exc_traceback = sys.exc_info()
+
+      traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                limit=2, file=sys.stdout)
+
       dob = ""
       img = ""
       bio = ""
 
+    child_influences = findInfluences(i)
+    mychildren = []
+    for j in child_influences:
+      mychildren.append({"name": str(j)})
+
     tree["influenced"]["children"].append({"name":i,
                                           "img":img,
                                           "dob":dob,
-                                          "bio":bio})
+                                          "bio":bio,
+                                          "children":mychildren
+                                          })
+
 
   for i in influencedBy_list:
     
@@ -64,8 +79,17 @@ def findInfluences(author):
 
   try:
     row = data[data["author"] == author]
-    mylist = row["influenced"].iloc[0].split("|")
+    
+    if len(row>1):
+      mylist = row["influenced"].iloc[0].split("|")
+    elif row["influenced"].empty:
+      mylist = []
   except:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+
+    traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stdout)
+
     print author, "not found"
   return mylist
 
@@ -77,6 +101,11 @@ def findInfluencedBy(author):
     row = data[data["author"] == author]
     mylist = row["influencedby"].iloc[0].split("|")
   except:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+
+    traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stdout)
+
     print author, "not found"
 
   return mylist
@@ -100,12 +129,17 @@ def handle(name):
     return json.dumps(resp)
 
   except:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+
+    traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stdout)
+
     return json.dumps({"error":"author not found"})
 
   
 
 
-print handle("Noam Chomsky")
+print handle("William Faulkner")
 #val = handle("Ludwig Wittgenstein")
 
 #val = json.dumps(val)
