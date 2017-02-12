@@ -119,7 +119,7 @@
   </app-toolbar>
 </app-header>
 
-<div id="tooltip" class="hidden">Test</div>
+<div id="tooltip" class="hidden"></div>
 
 
 </body>
@@ -133,8 +133,8 @@ $.ajax({type     : 'GET',
          .done(function(data) {
                $("<div>").append(data).appendTo($("body"))
                });
-               
-            
+
+
 //
 $.ajax({type     : 'GET',
 url      : "/handleRequest.py",
@@ -281,7 +281,7 @@ function update(source) {
 
       //Update the tooltip position and value
         $("#tooltip").text(d["bio"])
-          
+
         d3.select("#tooltip")
           .style("left", (d3.event.pageX+ 25) + "px")
           .style("top", (d3.event.pageY + 35) + "px")
@@ -289,7 +289,7 @@ function update(source) {
 
       //Show the tooltip
         d3.select("#tooltip").classed("hidden", false);
-          
+
 
        })
 
@@ -340,7 +340,7 @@ function update(source) {
             .attr("height", config.avatar_size)
             .attr("x", 0)
             .attr("y", 0);
-                               
+
 
        }
 
