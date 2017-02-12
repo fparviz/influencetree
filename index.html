@@ -28,22 +28,6 @@
     --paper-progress-active-color: rgba(255, 255, 255, 0.5);
     --paper-progress-container-color: transparent;
   }
-  app-header {
-    @apply(--layout-fixed-top);
-    color: #fff;
-    --app-header-background-rear-layer: {
-      background-color: #ef6c00;
-    };
-  }
-  app-drawer {
-    --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
-    --app-drawer-content-container: {
-      background-color: #B0BEC5;
-    }
-  }
-  sample-content {
-    padding-top: 64px;
-  }
 
   #tooltip {
         position: absolute;
@@ -117,9 +101,9 @@
 
 <script>
 
-var margin = {top: 50, right: 100, bottom: 300, left: 400},
+var margin = {top: 20, right: 100, bottom: 100, left: 400},
     width = 1500 - margin.right - margin.left,
-    height = 1200 - margin.top - margin.bottom;
+    height = 800 - margin.top - margin.bottom;
 
 //var margin = {top: 20, right: 120, bottom: 20, left: 120},
 //    width = 960 - margin.right - margin.left,
