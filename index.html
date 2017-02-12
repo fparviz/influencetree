@@ -23,7 +23,8 @@
     font-family: 'Roboto', 'Noto', sans-serif;
     -webkit-font-smoothing: antialiased;
     /*background-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.6) 100%), url("images/tree.jpg");;*/
-    background: -webkit-linear-gradient(left, rgba(0,0,255,0), rgba(0,0,255,0.5));
+    background:#ECEFF1;
+    /*background: -webkit-linear-gradient(left, rgba(0,0,255,0), rgba(0,0,255,0.5));*/
 
     /*background: #f1f1f1;*/
   }
@@ -112,7 +113,7 @@
   
 <app-header style="height: 96px;" condenses>
   <app-toolbar style="height: 64px;">
-  <paper-input class="input" type="text" list="authors" label="Input label" required auto-validate error-message="Need to add a Search Item">></paper-input>
+  <paper-input id="author_name" type="text" list="authors" class="input" label="Search" type="search" keyEventTarget></paper-input>
     <div class="heading" main-title>Influence Tree</div>
   </app-toolbar>
 </app-header>
@@ -134,16 +135,24 @@ $.ajax({type     : 'GET',
                $("<div>").append(data).appendTo($("body"))
                });
 
-$.ajax({type     : 'GET',
-       url      : "/handleRequest.py",
-       dataType : "json",
-       data     : {
-                    "author":"Noam Chomsky"
+$('#author_name').on('keyup', function () {
+    var keycode = (event.keyCode ? event.keyCode : event.which);
+    if(keycode == '13'){
+      var author_name = $(this).val();
+       $.ajax({type     : 'GET',
+        url      : "/handleRequest.py",
+        dataType : "json",
+        data     : {
+                    "author":author_name
                   }
-       })
-      .done(function(data) {
+        })
+        .done(function(data) {
             console.log(data)
             });
+      }
+})
+
+
 
 
 var margin = {top: 20, right: 100, bottom: 100, left: 400},
