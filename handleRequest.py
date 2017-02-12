@@ -44,7 +44,21 @@ def buildInfluenceTree(data,author, influenced_list, influencedBy_list):
     child_influences = findInfluences(i)
     mychildren = []
     for j in child_influences:
-      mychildren.append({"name": str(j)})
+      name = str(j)
+      try:
+        children_data = data[data["author"] == j]
+        dob_child = children_data["dob"].iloc[0]
+        img_child = "./thumbnails-300/"+str(children_data["wikipageid"].iloc[0])+".jpg"
+        bio_child = children_data["bio"].iloc[0]
+      except:
+        dob_child =""
+        img_child=""
+        bio_child=""
+
+      mychildren.append({"name": name,
+                        "img":img_child,
+                        "dob":dob_child,
+                        "bio":bio_child})
 
     tree["influenced"]["children"].append({"name":i,
                                           "img":img,
@@ -139,7 +153,7 @@ def handle(name):
   
 
 
-print handle("William Faulkner")
+handle("William Faulkner")
 #val = handle("Ludwig Wittgenstein")
 
 #val = json.dumps(val)

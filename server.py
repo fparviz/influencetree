@@ -8,7 +8,7 @@ import SimpleHTTPServer
 from urlparse import urlparse,parse_qs
 import handleRequest
 
-PORT = 8000
+PORT = 8001
 
 def handleAuthor(author):
   """ sample function to be called via a URL"""
