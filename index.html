@@ -8,6 +8,7 @@
 <link rel="import" href="bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <!-- Bootstrap -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -124,7 +125,21 @@
 
 <script>
 
+
+$.ajax({type     : 'GET',
+       url      : "/handleRequest.py",
+       dataType : "json",
+       data     : {
+                    "author":"Noam Chomsky"
+                  }
+       })
+      .done(function(data) {
+            console.log(data)
+            });
+
+
 var margin = {top: 20, right: 100, bottom: 100, left: 400},
+
     width = 1500 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
