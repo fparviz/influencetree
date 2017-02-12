@@ -9,16 +9,25 @@
 <link rel="import" href="bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <script src="//d3js.org/d3.v3.min.js"></script>
+<!-- Bootstrap -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
 
 <style is="custom-style">
   body {
     margin: 0;
     font-family: 'Roboto', 'Noto', sans-serif;
     -webkit-font-smoothing: antialiased;
-    background: #f1f1f1;
+    /*background-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.6) 100%), url("images/tree.jpg");;*/
+    background: -webkit-linear-gradient(left, rgba(0,0,255,0), rgba(0,0,255,0.5));
+
+    /*background: #f1f1f1;*/
   }
   app-toolbar {
-    background-color: #4285f4;
+    background-color: #448AFF;
+    /*background-color: #4285f4;*/
     color: #fff;
   }
   paper-icon-button + [main-title] {
@@ -30,6 +39,11 @@
     --paper-progress-active-color: rgba(255, 255, 255, 0.5);
     --paper-progress-container-color: transparent;
   }
+  img {
+    opacity: 0.5;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+
+}
 
   #tooltip {
         position: absolute;
@@ -75,12 +89,13 @@
 .node circle {
   fill: #fff;
   stroke: steelblue;
-  stroke-width: 4.5px;
+  stroke-width: 1.5px;
 }
 
 
 .node text {
-  font: 100px , sans-serif;
+  font-family: 'Raleway', sans-serif;
+  font-size: 26px;
 }
 
 .link {
@@ -103,6 +118,7 @@
 <div id="tooltip" class="hidden">
  <p>Bio and Books</p>
 </div>
+
 
 </body>
 
@@ -179,7 +195,7 @@ function update(source) {
       //var yPosition = parseFloat(d3.select(this).attr("root.y0"));
         d3.select(this).attr({
           "font-weight": "bold",
-          "font-size": "20px"
+          "font-size": "30px"
         })
 
       //Update the tooltip position and value
@@ -196,7 +212,7 @@ function update(source) {
     .on("mouseout", function() {
       d3.select(this).attr({
           "font-weight": "regular",
-          "font-size": "16px"
+          "font-size": "26px"
 
        })
       //Hide the tooltip
@@ -214,16 +230,40 @@ function update(source) {
       .attr("dy", ".35em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { return d.name; })
-      .style("fill-opacity", 1e-6);
+      .style("fill-opacity",1e-6);
 
+var config = {
+    "avatar_size" : 52
+}
+
+
+var defs = svg.append('svg:defs');
+  defs.append("svg:pattern")
+    .attr("id", "image")
+    .attr("width", config.avatar_size)
+    .attr("height", config.avatar_size)
+    .attr("patternUnits", "userSpaceOnUse")
+    .append("svg:image")
+    .attr("xlink:href", 'images/man1.jpg')
+    .attr("width", config.avatar_size)
+    .attr("height", config.avatar_size)
+    .attr("x", 0)
+    .attr("y", 0);
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
+
+  //This is the radius of the node circle
   nodeUpdate.select("circle")
-      .attr("r", 4.5)
-      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+    .attr("cx", config.avatar_size/2)
+    .attr("cy", config.avatar_size/2)
+    .attr("r", config.avatar_size/2)
+    .style("fill", "#fff")
+    //.attr("r", 30)
+    .style("fill", "url(#image)");
+      //.style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
