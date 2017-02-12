@@ -113,7 +113,7 @@
         <p>Hover Test</p>
 
 </div>
-
+</body>
 
 <script>
 
@@ -186,22 +186,33 @@ function update(source) {
       //Get this circle's x/y values, then augment for the tooltip
       //var xPosition = parseFloat(d3.select(this).attr("root.x0"));
       //var yPosition = parseFloat(d3.select(this).attr("root.y0"));
+        d3.select(this).attr({
+          "font-weight": "bold",
+          "font-size": "20px"
+        })
 
       //Update the tooltip position and value
-      d3.select("#tooltip")
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px")
-        .select("#value")
-        .text(d);
+        d3.select("#tooltip")
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px")
+          .select("#value")
+          .text(d);
 
       //Show the tooltip
-      d3.select("#tooltip").classed("hidden", false);
-    })
+        d3.select("#tooltip").classed("hidden", false);
+       })
 
     .on("mouseout", function() {
-    //Hide the tooltip
-    d3.select("#tooltip").classed("hidden", true);
-    });
+      d3.select(this).attr({
+          "font-weight": "regular",
+          "font-size": "16px"
+
+       })
+      //Hide the tooltip
+       d3.select("#tooltip").classed("hidden", true);
+      });
+
+
 
   nodeEnter.append("circle")
       .attr("r", 1e-6)
@@ -283,17 +294,7 @@ function click(d) {
   update(d);
 }
 
-// Create Event Handlers for mouse
-      function handleMouseOver(d, i) {  // Add interactivity
 
-            // Use D3 to select element, change color and size
-            d3.select(this).attr({
-              fill: "red",
-            });
-
-            // Specify where to put label of text
-            svg.append("text");
-          }
 
 </script>
-</body>
+
