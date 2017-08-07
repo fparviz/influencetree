@@ -8,6 +8,6 @@ The goal of this project is to create a visualization of author's influences.
 
 ## To Use
 
-just run python server.py.
-open the website at the proper port.
-Note that by default William Faulkner's tree should be loaded.
+just run python server.py   
+open the website at the proper port  
+Note that by default William Faulkner's tree should be loaded  
