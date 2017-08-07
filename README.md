@@ -1,4 +1,4 @@
-# influencetree
+# InfluenceTree
 
 The goal of this project is to create a visualization of author's influences. 
 
