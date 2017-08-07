@@ -8,7 +8,7 @@ The goal of this project is to create a visualization of author's influences.
 
 ## To Use
 
-just run 
+Run: 
 ```
 python server.py
 ```
