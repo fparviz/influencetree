@@ -1,0 +1,97 @@
+{
+	"name": "Gottfried Wilhelm Leibniz",
+	"children": [{
+			"name": "18 c",
+			"children": [{
+					"name": "George Berkeley"
+				},
+				{
+					"name": "Voltaire"
+				},
+				{
+					"name": "David Hume"
+				},
+				{
+					"name": "Ernst Platner"
+				},
+				{
+					"name": "Carl Friedrich Gauss"
+				},
+				{
+					"name": "Joseph-Louis Lagrange"
+				},
+				{
+					"name": "Leonhard Euler"
+				}
+			]
+		},
+
+		{
+			"name": "19 c",
+			"children": [{
+					"name": "Immanuel Kant"
+				},
+				{
+					"name": "Bertrand Russell"
+				},
+				{
+					"name": "Norbert Wiener"
+				},
+				{
+					"name": "Ernst Platner"
+				},
+				{
+					"name": "Bernhard Riemann"
+				},
+				{
+					"name": "Wilhelm Wundt"
+				},
+				{
+					"name": "Gottlob Frege"
+				}
+			]
+		},
+
+		{
+			"name": "20 c",
+			"children": [{
+					"name": "Kurt Gödel"
+				},
+				{
+					"name": "Bertrand Russell"
+				},
+				{
+					"name": "Norbert Wiener"
+				},
+				{
+					"name": "Ernst Platner"
+				},
+				{
+					"name": "Charles Sanders Peirce"
+				},
+				{
+					"name": "Benoit Mandelbrot"
+				},
+				{
+					"name": "Nicholas Rescher",
+					"children": [{
+							"name": "Alexander Pruss"
+						},
+						{
+							"name": "Michele Marsonet"
+						},
+						{
+							"name": "Ernest Sosa"
+						},
+						{
+							"name": "John A. Leslie"
+						}
+					]
+				}
+
+			]
+		}
+
+	]
+
+}

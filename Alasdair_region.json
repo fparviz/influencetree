@@ -1,0 +1,60 @@
+{
+	"name": "Alasdair MacIntyre",
+	"children": [{
+			"name": "Europe",
+			"children": [{
+					"name": "Friedrich Nietzsche"
+				},
+				{
+					"name": "Karl Marx"
+				},
+				{
+					"name": "Georg Wilhelm Friedrich Hegel"
+				},
+				{
+					"name": "Imre Lakatos"
+				},
+				{
+					"name": "R. G. Collingwood"
+				},
+				{
+					"name": "Søren Kierkegaard"
+				}
+
+
+			]
+		},
+		{
+			"name": "NULL",
+			"children": [{
+					"name": "Aristotle"
+				},
+				{
+					"name": "Augustine of Hippo"
+				},
+				{
+					"name": "Edith Stein"
+				},
+				{
+					"name": "John Henry Newman"
+				},
+				{
+					"name": "Thomas Aquinas"
+				}
+			]
+		},
+
+		{
+
+			"name": "North America",
+			"children": [{
+					"name": "Thomas Kuhn"
+				}
+			]
+		}
+
+
+	]
+
+}
+
