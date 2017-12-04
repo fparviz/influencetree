@@ -1,0 +1,400 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Influence Ripple</title>
+  <script type="text/javascript" src="region.js"></script>
+  <script type="text/javascript" src="region_to_influence.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <meta charset="utf-8" />
+</head>
+<style>
+
+  #viz, svg {
+    width: 1000px;
+    height: 1000px;
+  }
+
+</style>
+
+
+<script>
+
+orbits = new Object()
+active = ""
+state = ""
+
+function clear_graph(){
+  if (orbits[active]){
+      orbits[active].clear_tick()
+  }
+
+  orbits = new Object()
+  active = ""
+  state = ""
+}
+
+root_data = {}
+root_data_all = ""
+
+function makeViz() {
+
+  //d3.json("Leibniz.json", function(data) {root_data=data; drawOrbit(data, "viz")});
+
+
+
+  //console.log(region, region.length)
+  console.log(regionInf)
+  var dropdownContent = document.querySelector('.dropdown-menu');
+  for (i = 0; i < region.length; i++) {
+    // for(i = 0; i < regionInf.length; i++) {
+    var element = region[i].name
+    //console.log(element)
+    var htmlToAppend = document.createElement("a");
+    htmlToAppend.text = element;
+    htmlToAppend.setAttribute("class","dropdown-item")
+    htmlToAppend.setAttribute("href","#")
+
+    //console.log(htmlToAppend)
+    dropdownContent.append(htmlToAppend)
+
+      $(htmlToAppend).on('click', function (d) {
+      //console.log(dropdownContent.value)
+      //console.log("change was made",d.target.innerText)
+      var dropdownMain = document.querySelectorAll('.main-button');
+
+      var str = dropdownMain.innerText;
+      //console.log(str)
+      var newstr = d.target.innerText;
+      //console.log(newstr)
+      //dropdownMain.value = newstr;
+      document.getElementById("dropdownMenuButton").innerText = newstr;
+
+      var dropdownContentPerson = document.querySelector('.person-drop');
+
+      dropdownContentPerson.innerHTML = ""
+      // console.log(childlist)
+
+       var newElem = regionInf[d.target.innerText]
+       newElem.sort()
+
+       for (i = 0; i < newElem.length; i++) {
+          var htmlToAppendPerson = document.createElement("a");
+          htmlToAppendPerson.text = newElem[i];
+          htmlToAppendPerson.setAttribute("class","dropdown-item")
+          htmlToAppendPerson.setAttribute("href","#")
+          dropdownContentPerson.append(htmlToAppendPerson)
+
+           //document.getElementById("personMenuButton").innerText = newpersonstr;
+
+        }
+
+         //var dropdownPerson = document.querySelectorAll('.person-drop').innerText;
+           //var newpersonstr = d.target.innerText;
+
+           $(dropdownContentPerson).on('click', function (d) {
+              var item = d.target.innerText;
+              document.getElementById("personMenuButton").innerText = item
+              console.log(root_data_all)
+              for(i = 0; i < root_data_all.length; i++) {
+                if (root_data_all[i].name == item) {
+                  console.log($('#viz'))
+                  $('#viz').empty()
+                  clear_graph()
+
+                  root_data = root_data_all[i]
+                   drawOrbit(root_data, "viz")
+                   break;
+                }
+              }
+
+           })
+        // $(dropdownContentPerson).show();
+    })
+
+  // }
+  }
+
+
+  d3.json("out.json", function(data) {
+      root_data_all = data
+    });
+
+
+}
+
+function drawOrbit(_data, parent) {
+
+  if (active==_data.name.replace(/\s/g, '')){
+    console.log("orbit already active")
+    return
+  }
+
+  root = d3.select("#viz")
+    .append('div')
+    .style("position","absolute")
+    .attr("id", _data.name.replace(/\s/g, ''))
+    .append("svg")
+
+  base_location = root
+
+  //down with category20a()!!
+  colors = d3.scale.category20b();
+
+  orbitScale = d3.scale.linear().domain([1, 3]).range([3.8, 1.5]).clamp(true);
+  radiusScale = d3.scale.linear().domain([0,1,2,3]).range([20,10,3,1]).clamp(true);
+
+
+  orbit = d3.layout.orbit().size([1000,1000])
+            .children(function(d) {
+              return d.children})
+            .revolution(function(d) {return d.depth})
+            .orbitSize(function(d) {return orbitScale(d.depth)})
+            .speed(.1)
+            .nodes(_data);
+
+
+
+
+  var circleNode = base_location.selectAll("g.node").data(orbit.nodes())
+                    .enter()
+                    .append("g")
+                    .attr("class", "node")
+                    .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"})
+                    .on("mouseover", nodeOver)
+                    .on("mouseout", nodeOut)
+                    .on("click", triggerTransition)
+
+circleNode.append("text")
+  .style("text-anchor", "middle")
+  .attr("y", 40)
+  .text(function(d) {return d.name})
+
+base_location.selectAll("g.node")
+  .append("circle")
+  .attr("r", function(d) {return radiusScale(d.depth)})
+  .style("fill", function(d) {return colors(d.depth)})
+
+base_location.selectAll("circle.orbits")
+  .data(orbit.orbitalRings())
+  .enter()
+  .insert("circle", "g")
+  .attr("class", "ring")
+  .attr("r", function(d) {return d.r})
+  .attr("cx", function(d) {return d.x})
+  .attr("cy", function(d) {return d.y})
+  .style("fill", "none")
+  .style("stroke", "black")
+  .style("stroke-width", "1px")
+  .style("stroke-opacity", .15)
+
+
+  orbit.on("tick", function() {
+    // console.log("tick")
+
+    base_location.selectAll("g.node")
+      .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"});
+
+     base_location.selectAll("circle.ring")
+    .attr("cx", function(d) {return d.x})
+    .attr("cy", function(d) {return d.y});
+  });
+
+ orbit.start();
+
+
+  function nodeOver(d) {
+    state = orbits[active].state()
+    console.log("node over - state", state)
+
+    if (state == "CLEARED"){
+      console.log("state has been cleared")
+      return
+    }
+    orbits[active].stop();
+
+    d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
+    d3.select(this).select("circle").style("stroke", "black").style("stroke-width", 3);
+  }
+
+  function nodeOut(d) {
+    state = orbits[active].state()
+    console.log("node out - state", state)
+    if (state == "CLEARED"){
+      console.log("state has been cleared")
+      return
+    }
+
+    orbits[active].start();
+    d3.selectAll("text").remove();
+    d3.selectAll("g.node > circle").style("stroke", "none").style("stroke-width", 0);
+  }
+
+  // var t = d3.transition()
+  //     .duration(200)
+  //     .ease(d3.easeLinear)
+
+  orbits[_data.name.replace(/\s/g, '')] = orbit
+  active = _data.name.replace(/\s/g, '')
+
+
+  function triggerTransition(d) {
+    // newtree = new Object()
+    // newtree["name"]=d.name
+
+    console.log(d, d.name)
+
+    if (d["expanded"] == true){
+      curr_orbit = d["orbit"]
+
+      n = d.name.replace(/\s/g, '')
+      // d3.select("#"+n).remove()
+
+      // orbits[n] = undefined
+      delete orbits[n]
+
+      parent = d["parent"]
+      while("parent" in parent){
+          parent = parent["parent"]
+      }
+      // console.log(parent)
+
+      // orbits[active].stop()
+      // orbits[active].clear_tick()
+
+      //drawOrbit(parent)
+
+      _p = parent.name.replace(/\s/g, '')
+      active = _p
+
+      //Reset the on tick handler
+      orbits[_p].on("tick", function() {
+          base_location = d3.select("#"+_p)
+
+          base_location.selectAll("g.node")
+            .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"});
+
+           base_location.selectAll("circle.ring")
+          .attr("cx", function(d) {return d.x})
+          .attr("cy", function(d) {return d.y});
+        });
+
+      orbits[_p].nodes(root_data)
+      d3.selectAll("#"+active+">svg>g.node>circle")
+          .style("fill", function(d) {return colors(d.depth)})
+      d3.selectAll("#"+active+">svg>circle.ring")
+          .style("stroke-opacity", 0.15)
+
+      // delete the expanded graph and start the other
+      d3.selectAll("#"+n).remove()
+      orbits[_p].start()
+
+      d["expanded"] = false
+    }
+    else{
+
+      // Handle some bad casess
+      if (active==d.name.replace(/\s/g, '')){
+        console.log("orbit already active")
+        return
+        }
+      else if (d.children == null){
+        console.log("no children")
+        return
+      }
+
+      console.log("stop")
+      // orbits[active].stop()
+      // orbits[active].clear_tick()
+
+      orbits[active].clear_tick()
+
+      d["expanded"] = true
+      console.log(d)
+
+      d3.selectAll("#"+active+">svg>g.node>circle")
+          .style("fill", function(d) {return "MintCream"})
+
+      d3.selectAll("#"+active+">svg>circle.ring")
+          .style("stroke-opacity", 0.05)
+
+      drawOrbit(d, "viz")
+    }
+    // d3.select(this).select("circle")
+
+    // .transition()
+    //    .duration(2000)
+    //    .style("opacity", 1)
+  }
+
+  return orbit
+
+}
+
+
+  // var regionJSON = "region.json";
+
+  // var obj = JSON.parse(regionJSON);
+  // $.getJSON("region.json", function(json) {
+  //     console.log(json); // this will show the info in firebug console
+
+  //     console.log("hello")
+  //     var dropdownContent = document.querySelector('.dropdown-menu');
+
+  //     for (i = 0; i < json.length; i++) {
+
+  //       var element = json[i];
+  //       console.log(element)
+
+  //     // var htmlToAppend = document.createElement('a');
+  //     // htmlToAppend.innerHTML = element.B;
+  //     // htmlToAppend.href = element.C;
+
+  //     // dropdownContent.appendChild(htmlToAppend);
+
+  //   }
+  // });
+
+
+</script>
+<body onload="makeViz()">
+<div class="container">
+  <div class="row">
+      <div class="col-12">
+        <h1 class="text-center" style="color:#5E35B1; padding-top: 12px";>Ripple of Influence</h1>
+      </div>
+    </div>
+  <div class="row justify-content-center" style="padding-top: 40px">
+    <div class="col-4">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle main-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Select a Region
+        </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+        <!-- <div id="dropdown-menu" aria-labelledby="dropdownMenuButton"> -->
+          <!-- <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a> -->
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle main-button" type="button" id="personMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Select a Person
+        </button>
+          <div class="dropdown-menu person-drop" aria-labelledby="personMenuButton">
+        </div>
+      </div>
+    </div>
+  <div id="viz"></div>
+</div>
+<footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3.layout.orbit.js" charset="utf-8" type="text/javascript"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</footer>
+</body>
+</html>

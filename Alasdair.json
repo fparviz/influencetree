@@ -1,0 +1,79 @@
+{
+	"name": "Alasdair MacIntyre",
+	"children": [{
+			"name": "Prussia",
+			"children": [{
+					"name": "Friedrich Nietzsche"
+				},
+				{
+					"name": "Karl Marx"
+				}
+			]
+		},
+		{
+			"name": "NULL",
+			"children": [{
+					"name": "Aristotle"
+				},
+				{
+					"name": "Augustine of Hippo"
+				},
+				{
+					"name": "Edith Stein"
+				},
+				{
+					"name": "John Henry Newman"
+				},
+				{
+					"name": "Thomas Aquinas"
+				}
+			]
+		},
+
+		{
+			"name": "Stuttgart",
+			"children": [{
+					"name": "Georg Wilhelm Friedrich Hegel"
+				}
+			]
+		},
+		{
+			"name": "Hungary",
+			"children": [{
+					"name": "Imre Lakatos"
+				}
+			]
+		},
+
+		{
+
+			"name": "Lancashire",
+			"children": [{
+					"name": "R. G. Collingwood"
+				}
+			]
+		},
+
+		{
+
+			"name": "Ohio",
+			"children": [{
+					"name": "Thomas Kuhn"
+				}
+			]
+		},
+		{
+
+			"name": "Copenhagen",
+			"children": [{
+					"name": "Søren Kierkegaard"
+				}
+
+
+			]
+		}
+
+	]
+
+}
+
