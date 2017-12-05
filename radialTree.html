@@ -57,7 +57,7 @@ function prepare_tree(tree, depth){
     
     for (i=0; i< tree.length; i++){
         region = tree[i]
-        
+
         for (j=0; j< region.length; j++){
             // If children already exist, simply recurse over the children array
             if (region[i]["children"]){
@@ -189,12 +189,12 @@ function drawOrbit(__data, parent) {
     console.log("orbit already active")
     return
   }
-  
+
   _data = prepare_full_tree(__data.name, 3)
   path.push(_data)
-  
+
   console.log(path)
-  
+
   root = d3.select("#viz")
     .append('div')
     .style("position","absolute")
@@ -203,7 +203,7 @@ function drawOrbit(__data, parent) {
 
   base_location = root
 
-  //down with category20a()!!
+
   colors = d3.scale.category20c();
 
   orbitScale = d3.scale.linear().domain([1, 3]).range([3.8, 1.5]).clamp(true);
@@ -271,8 +271,14 @@ circleNode.append("text")
 base_location.selectAll("g.node")
   .append("circle")
   .attr("r", function(d) {return radiusScale(d.depth)})
-  .style("fill", function(d) {return colors(d.depth)})
-
+  .style("fill", function(d) {
+    if ((d.depth) == 1) {
+      return "#00897B";
+      //return colors(d.depth)})
+    }else {
+      return "#4FC3F7";
+    }
+  })
 base_location.selectAll("circle.orbits")
   .data(orbit.orbitalRings())
   .enter()
@@ -312,7 +318,7 @@ base_location.selectAll("circle.orbits")
     orbits[active].stop();
 
     d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
-    d3.select(this).select("circle").style("stroke", "black").style("stroke-width", 3);
+    d3.select(this).select("circle").style("stroke", "grey").style("stroke-width", 3);
   }
 
   function nodeOut(d) {
@@ -357,10 +363,10 @@ base_location.selectAll("circle.orbits")
     }
     
     if ((path[path.length-1].name==d.name)){
-        
+
       curr_orbit = d["orbit"]
       parent_idx = path.length -2
-      
+
       parent_name = path[parent_idx].name
       console.log(parent)
       console.log("path", path)
@@ -375,8 +381,8 @@ base_location.selectAll("circle.orbits")
       while("parent" in parent){
           parent = parent["parent"]
       }*/
-      
-      
+
+
       // console.log(parent)
 
       // orbits[active].stop()
@@ -401,7 +407,7 @@ base_location.selectAll("circle.orbits")
 
 
       orbits[_p].nodes(path[parent_idx])
-      
+
       // Renable the colors
       d3.selectAll("#"+active+">svg>g.node>circle")
           .style("fill", function(d) {return colors(d.depth)})
@@ -499,11 +505,6 @@ base_location.selectAll("circle.orbits")
           Select a Region
         </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-
-        <!-- <div id="dropdown-menu" aria-labelledby="dropdownMenuButton"> -->
-          <!-- <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a> -->
         </div>
       </div>
     </div>
