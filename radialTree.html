@@ -279,8 +279,12 @@ function drawOrbit(__data, parent) {
 
     circleNode.append("text")
       .style("text-anchor", "middle")
-      .attr("y", 40)
-      .text(function(d) {return d.name})
+      .attr("y", 35)
+      .text(function(d) {
+        if ((d.depth) == 1 || (d.depth) == 0) {
+          return d.name;
+        }
+      })
 
     base_location.selectAll("g.node")
       .append("circle")
