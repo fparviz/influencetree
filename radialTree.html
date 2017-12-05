@@ -40,17 +40,17 @@ path = []
 function prepare_tree(tree, depth){
     /* this function checks that the tree is maximally fit with all possible children
      up to a limit of depth equal to depth */
-    
+
     if (depth == 0){
         return
     }
-    
-    
+
+
     for (i=0; i< tree.length; i++){
         region = tree[i]
-        
+
         for (j=0; j< region.length; j++){
-            
+
             if (region[i]["children"]){
                 prepare_tree(region[i], depth-1)
             }
@@ -68,7 +68,7 @@ function prepare_tree(tree, depth){
 
 function prepare_full_tree(rootname, depth){
     console.log(rootname)
-    
+
     for (i=0; i <root_data_all.length; i++){
         if (root_data_all[i].name==rootname){
             break
@@ -172,12 +172,12 @@ function drawOrbit(__data, parent) {
     console.log("orbit already active")
     return
   }
-  
+
   _data = prepare_full_tree(__data.name, 3)
   path.push(_data)
-  
+
   console.log(path)
-  
+
   root = d3.select("#viz")
     .append('div')
     .style("position","absolute")
@@ -295,7 +295,7 @@ base_location.selectAll("circle.orbits")
     orbits[active].stop();
 
     d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
-    d3.select(this).select("circle").style("stroke", "black").style("stroke-width", 3);
+    d3.select(this).select("circle").style("stroke", "grey").style("stroke-width", 3);
   }
 
   function nodeOut(d) {
@@ -334,10 +334,10 @@ base_location.selectAll("circle.orbits")
         }
     }*/
     if ((path[path.length-1].name==d.name)){
-        
+
       curr_orbit = d["orbit"]
       parent_idx = path.length -2
-      
+
       parent_name = path[parent_idx].name
       console.log(parent)
       console.log("path", path)
@@ -352,8 +352,8 @@ base_location.selectAll("circle.orbits")
       while("parent" in parent){
           parent = parent["parent"]
       }*/
-      
-      
+
+
       // console.log(parent)
 
       // orbits[active].stop()
@@ -378,7 +378,7 @@ base_location.selectAll("circle.orbits")
 
 
       orbits[_p].nodes(path[parent_idx])
-      
+
       // Renable the colors
       d3.selectAll("#"+active+">svg>g.node>circle")
           .style("fill", function(d) {return colors(d.depth)})
