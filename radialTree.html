@@ -37,6 +37,7 @@ function clear_graph(){
 root_data = {}
 root_data_all = ""
 path = []
+diversity_data = ""
 
 function draw_stats(){
 
@@ -44,7 +45,32 @@ function draw_stats(){
     for(i=1;i<path.length; i++){
         mystr = mystr + " --> " + path[i].name
     }
-    $("#stats").html(mystr)
+    
+    div = $("<div>").css("position","absolute")
+
+    div.append( $("<a>").text(mystr))
+    div.append($("<br>"))
+    div.append($("<br>"))
+
+    div.append( $("<a>").text(path[0].name+": Influences"))
+    div.append($("<br>"))
+
+    console.log(diversity_data[path[0].name])
+
+    region_stats = diversity_data[path[0].name]["byRegion"]
+    console.log(region_stats)
+    keys = Object.keys(region_stats)
+    keys.sort()
+    
+    for (i=0; i< keys.length; i++){
+        key = keys[i]
+        console.log(key)
+        div.append($("<a>").text(key + " : " + region_stats[key]))
+        div.append($("<br>"))
+    }
+
+    $("#stats").html(div)
+    
 }
 
 function get_active_name(name){
@@ -197,6 +223,11 @@ function makeViz() {
   d3.json("out.json", function(data) {
       root_data_all = data
     });
+   
+  d3.json("diversity.json", function(_data) {
+           diversity_data = _data
+           });
+    
 
 }
 
