@@ -34,27 +34,38 @@ function clear_graph(){
 
 root_data = {}
 root_data_all = ""
-
 path = []
 
+function draw_stats(){
+    
+    mystr = path[0].name
+    for(i=1;i<path.length; i++){
+        mystr = mystr + " --> " + path[i].name
+    }
+    $("#stats").html(mystr)
+}
+
 function prepare_tree(tree, depth){
-    /* this function checks that the tree is maximally fit with all possible children
+    /*
+     this function checks that the tree is maximally fit with all possible children
      up to a limit of depth equal to depth */
     
+    /* Stop recursing once we've reached max recursive depth */
     if (depth == 0){
         return
     }
-    
     
     for (i=0; i< tree.length; i++){
         region = tree[i]
         
         for (j=0; j< region.length; j++){
-            
+            // If children already exist, simply recurse over the children array
             if (region[i]["children"]){
                 prepare_tree(region[i], depth-1)
             }
             else{
+                /* If no children key, find children in the root_data,
+                 append it to the current node, and recurse over it */
                 name = region[i]["name"]
                 new_tree = root_data_all[name]
                 if (new_tree["children"]){
@@ -67,15 +78,21 @@ function prepare_tree(tree, depth){
 }
 
 function prepare_full_tree(rootname, depth){
-    console.log(rootname)
+    /* Find the item in root_data_all with name as rootname */
+    console.log("prepare_full_tree", rootname)
     
     for (i=0; i <root_data_all.length; i++){
         if (root_data_all[i].name==rootname){
             break
         }
     }
+    
+    // create a deep copy of the array
     newtree = JSON.parse(JSON.stringify(root_data_all[i]));
+    
+    // Build a full children of depth depth
     prepare_tree(newtree, depth)
+    
     return newtree
 }
 
@@ -333,6 +350,12 @@ base_location.selectAll("circle.orbits")
             break
         }
     }*/
+    
+    // don't expand region nodes
+    if (Object.keys(regionInf).includes(d.name)){
+        return
+    }
+    
     if ((path[path.length-1].name==d.name)){
         
       curr_orbit = d["orbit"]
@@ -391,6 +414,8 @@ base_location.selectAll("circle.orbits")
 
       d["expanded"] = false
       path.pop()
+      draw_stats()
+
 
     }
     else{
@@ -429,6 +454,7 @@ base_location.selectAll("circle.orbits")
     //    .style("opacity", 1)
   }
 
+    draw_stats()
   return orbit
 
 }
@@ -490,7 +516,11 @@ base_location.selectAll("circle.orbits")
         </div>
       </div>
     </div>
+    
+
    <div class="col">
+       <div id="stats"></div>
+
     <div id="viz"></div>
    </div>
 </div>
