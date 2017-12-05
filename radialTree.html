@@ -186,7 +186,7 @@ function drawOrbit(__data, parent) {
 
   base_location = root
 
-  //down with category20a()!!
+
   colors = d3.scale.category20c();
 
   orbitScale = d3.scale.linear().domain([1, 3]).range([3.8, 1.5]).clamp(true);
@@ -254,8 +254,14 @@ circleNode.append("text")
 base_location.selectAll("g.node")
   .append("circle")
   .attr("r", function(d) {return radiusScale(d.depth)})
-  .style("fill", function(d) {return colors(d.depth)})
-
+  .style("fill", function(d) {
+    if ((d.depth) == 1) {
+      return "#00897B";
+      //return colors(d.depth)})
+    }else {
+      return "#4FC3F7";
+    }
+  })
 base_location.selectAll("circle.orbits")
   .data(orbit.orbitalRings())
   .enter()
@@ -473,11 +479,6 @@ base_location.selectAll("circle.orbits")
           Select a Region
         </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-
-        <!-- <div id="dropdown-menu" aria-labelledby="dropdownMenuButton"> -->
-          <!-- <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a> -->
         </div>
       </div>
     </div>
