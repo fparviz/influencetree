@@ -58,10 +58,9 @@ function draw_stats(){
     console.log(diversity_data[path[0].name])
 
     region_stats = diversity_data[path[0].name]["byRegion"]
-    console.log(region_stats)
     keys = Object.keys(region_stats)
-    keys.sort()
-    
+    keys = keys.sort(function (a,b){return region_stats[b] - region_stats[a] })
+
     for (i=0; i< keys.length; i++){
         key = keys[i]
         console.log(key)
