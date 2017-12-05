@@ -35,6 +35,50 @@ function clear_graph(){
 root_data = {}
 root_data_all = ""
 
+path = []
+
+function prepare_tree(tree, depth){
+    /* this function checks that the tree is maximally fit with all possible children
+     up to a limit of depth equal to depth */
+    
+    if (depth == 0){
+        return
+    }
+    
+    
+    for (i=0; i< tree.length; i++){
+        region = tree[i]
+        
+        for (j=0; j< region.length; j++){
+            
+            if (region[i]["children"]){
+                prepare_tree(region[i], depth-1)
+            }
+            else{
+                name = region[i]["name"]
+                new_tree = root_data_all[name]
+                if (new_tree["children"]){
+                    region[i]["children"] = new_tree["children"]
+                    prepare_tree(region[i], depth-1)
+                }
+            }
+         }
+    }
+}
+
+function prepare_full_tree(rootname, depth){
+    console.log(rootname)
+    
+    for (i=0; i <root_data_all.length; i++){
+        if (root_data_all[i].name==rootname){
+            break
+        }
+    }
+    newtree = JSON.parse(JSON.stringify(root_data_all[i]));
+    prepare_tree(newtree, depth)
+    return newtree
+}
+
 function makeViz() {
 
   //d3.json("Leibniz.json", function(data) {root_data=data; drawOrbit(data, "viz")});
@@ -95,7 +139,7 @@ function makeViz() {
            $(dropdownContentPerson).on('click', function (d) {
               var item = d.target.innerText;
               document.getElementById("personMenuButton").innerText = item
-              console.log(root_data_all)
+              //console.log(root_data_all)
               for(i = 0; i < root_data_all.length; i++) {
                 if (root_data_all[i].name == item) {
                   console.log($('#viz'))
@@ -122,13 +166,18 @@ function makeViz() {
 
 }
 
-function drawOrbit(_data, parent) {
+function drawOrbit(__data, parent) {
 
-  if (active==_data.name.replace(/\s/g, '')){
+  if (active==__data.name.replace(/\s/g, '')){
     console.log("orbit already active")
     return
   }
-
+  
+  _data = prepare_full_tree(__data.name, 3)
+  path.push(_data)
+  
+  console.log(path)
+  
   root = d3.select("#viz")
     .append('div')
     .style("position","absolute")
@@ -243,19 +292,35 @@ base_location.selectAll("circle.orbits")
 
     console.log(d, d.name)
 
-    if (d["expanded"] == true){
+    // check whether the selected node has already been expanded
+    /*found = -1
+    for (i=0; i<path.length; i++){
+        if (path[i].name == d.name){
+            found = i
+            break
+        }
+    }*/
+    if ((path[path.length-1].name==d.name)){
+        
       curr_orbit = d["orbit"]
-
+      parent_idx = path.length -2
+      
+      parent_name = path[parent_idx].name
+      console.log(parent)
+      console.log("path", path)
       n = d.name.replace(/\s/g, '')
       // d3.select("#"+n).remove()
 
       // orbits[n] = undefined
       delete orbits[n]
 
+      /*
       parent = d["parent"]
       while("parent" in parent){
           parent = parent["parent"]
-      }
+      }*/
+      
+      
       // console.log(parent)
 
       // orbits[active].stop()
@@ -263,7 +328,7 @@ base_location.selectAll("circle.orbits")
 
       //drawOrbit(parent)
 
-      _p = parent.name.replace(/\s/g, '')
+      _p = parent_name.replace(/\s/g, '')
       active = _p
 
       //Reset the on tick handler
@@ -278,7 +343,10 @@ base_location.selectAll("circle.orbits")
           .attr("cy", function(d) {return d.y});
         });
 
-      orbits[_p].nodes(root_data)
+
+      orbits[_p].nodes(path[parent_idx])
+      
+      // Renable the colors
       d3.selectAll("#"+active+">svg>g.node>circle")
           .style("fill", function(d) {return colors(d.depth)})
       d3.selectAll("#"+active+">svg>circle.ring")
@@ -289,6 +357,8 @@ base_location.selectAll("circle.orbits")
       orbits[_p].start()
 
       d["expanded"] = false
+      path.pop()
+
     }
     else{
 
