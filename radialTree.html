@@ -30,6 +30,8 @@ function clear_graph(){
   orbits = new Object()
   active = ""
   state = ""
+  path = []
+
 }
 
 root_data = {}
@@ -103,7 +105,8 @@ function makeViz() {
 
 
   //console.log(region, region.length)
-  console.log(regionInf)
+  console.log("Loaded region information", regionInf)
+  
   var dropdownContent = document.querySelector('.dropdown-menu');
   for (i = 0; i < region.length; i++) {
     // for(i = 0; i < regionInf.length; i++) {
@@ -154,17 +157,28 @@ function makeViz() {
            //var newpersonstr = d.target.innerText;
 
            $(dropdownContentPerson).on('click', function (d) {
+                                       
               var item = d.target.innerText;
               document.getElementById("personMenuButton").innerText = item
-              //console.log(root_data_all)
+              
+               if (item.replace(/\s/g, '') == active){
+                   console.log("Person CLICK Evt already active", item)
+                   return
+               }
+                                       
+              console.log("New Person Selected", item, root_data_all, active)
+               
               for(i = 0; i < root_data_all.length; i++) {
                 if (root_data_all[i].name == item) {
                   console.log($('#viz'))
-                  $('#viz').empty()
-                  clear_graph()
+                                       
+                   $('#viz').empty()
+                   clear_graph()
 
-                  root_data = root_data_all[i]
+                   root_data = root_data_all[i]
+                         
                    drawOrbit(root_data, "viz")
+                   
                    break;
                 }
               }
@@ -263,76 +277,76 @@ function drawOrbit(__data, parent) {
 //     .attr("startOffset",function(d,i){return "50%";})
 //     .text(function(d){return d.name;})
 
-circleNode.append("text")
-  .style("text-anchor", "middle")
-  .attr("y", 40)
-  .text(function(d) {return d.name})
-
-base_location.selectAll("g.node")
-  .append("circle")
-  .attr("r", function(d) {return radiusScale(d.depth)})
-  .style("fill", function(d) {
-    if ((d.depth) == 1) {
-      return "#00897B";
-      //return colors(d.depth)})
-    }else {
-      return "#4FC3F7";
-    }
-  })
-base_location.selectAll("circle.orbits")
-  .data(orbit.orbitalRings())
-  .enter()
-  .insert("circle", "g")
-  .attr("class", "ring")
-  .attr("r", function(d) {return d.r})
-  .attr("cx", function(d) {return d.x})
-  .attr("cy", function(d) {return d.y})
-  .style("fill", "none")
-  .style("stroke", "black")
-  .style("stroke-width", "1px")
-  .style("stroke-opacity", .15)
-
-
-  orbit.on("tick", function() {
-    // console.log("tick")
+    circleNode.append("text")
+      .style("text-anchor", "middle")
+      .attr("y", 40)
+      .text(function(d) {return d.name})
 
     base_location.selectAll("g.node")
-      .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"});
+      .append("circle")
+      .attr("r", function(d) {return radiusScale(d.depth)})
+      .style("fill", function(d) {
+        if ((d.depth) == 1) {
+          return "#00897B";
+          //return colors(d.depth)})
+        }else {
+          return "#4FC3F7";
+        }
+      })
+    base_location.selectAll("circle.orbits")
+      .data(orbit.orbitalRings())
+      .enter()
+      .insert("circle", "g")
+      .attr("class", "ring")
+      .attr("r", function(d) {return d.r})
+      .attr("cx", function(d) {return d.x})
+      .attr("cy", function(d) {return d.y})
+      .style("fill", "none")
+      .style("stroke", "black")
+      .style("stroke-width", "1px")
+      .style("stroke-opacity", .15)
 
-     base_location.selectAll("circle.ring")
-    .attr("cx", function(d) {return d.x})
-    .attr("cy", function(d) {return d.y});
-  });
 
- orbit.start();
+      orbit.on("tick", function() {
+        // console.log("tick")
+
+        base_location.selectAll("g.node")
+          .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"});
+
+         base_location.selectAll("circle.ring")
+        .attr("cx", function(d) {return d.x})
+        .attr("cy", function(d) {return d.y});
+      });
+
+     orbit.start();
 
 
-  function nodeOver(d) {
-    state = orbits[active].state()
-    console.log("node over - state", state)
+          function nodeOver(d) {
+            state = orbits[active].state()
+            console.log("node over - state", state)
 
-    if (state == "CLEARED"){
-      console.log("state has been cleared")
-      return
-    }
-    orbits[active].stop();
+            if (state == "CLEARED"){
+              console.log("state has been cleared")
+              return
+            }
+            orbits[active].stop();
 
-    d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
-    d3.select(this).select("circle").style("stroke", "grey").style("stroke-width", 3);
-  }
+            d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
+            d3.select(this).select("circle").style("stroke", "grey").style("stroke-width", 3);
+          }
 
-  function nodeOut(d) {
-    state = orbits[active].state()
-    console.log("node out - state", state)
-    if (state == "CLEARED"){
-      console.log("state has been cleared")
-      return
-    }
+          function nodeOut(d) {
+            state = orbits[active].state()
+            console.log("node out - state", state)
+            if (state == "CLEARED"){
+              console.log("state has been cleared")
+              return
+            }
 
-    orbits[active].start();
-    d3.selectAll("text").remove();
-    d3.selectAll("g.node > circle").style("stroke", "none").style("stroke-width", 0);
-  }
+            orbits[active].start();
+            d3.selectAll("text").remove();
+            d3.selectAll("g.node > circle").style("stroke", "none").style("stroke-width", 0);
+          }
 
   // var t = d3.transition()
   //     .duration(200)
@@ -340,127 +354,111 @@ base_location.selectAll("circle.orbits")
 
   orbits[_data.name.replace(/\s/g, '')] = orbit
   active = _data.name.replace(/\s/g, '')
+  console.log("ACTIVE Orbit", active)
+
+          function triggerTransition(d) {
+            /*
+             Handles node clicking */
+            
+            console.log("triggerTransition", d, d.name, active)
 
 
-  function triggerTransition(d) {
-    // newtree = new Object()
-    // newtree["name"]=d.name
+            // Do Nothing for Top most node
+            if (path[0].name==d.name){
+                console.log("top most node, do nothing")
+                return
+            }
+            
+            // don't expand region nodes
+            if (Object.keys(regionInf).includes(d.name)){
+                return
+            }
+            
+            if (path[path.length-1].name==d.name){
+             // Collapse the current viewed author and go backward one step
+             
+              n = d.name.replace(/\s/g, '')
 
-    console.log(d, d.name)
+              parent_idx = path.length -2
+              parent_name = path[parent_idx].name
+              
+              // Delete the orbit info for the child
+              delete orbits[n]
 
-    // check whether the selected node has already been expanded
-    /*found = -1
-    for (i=0; i<path.length; i++){
-        if (path[i].name == d.name){
-            found = i
-            break
-        }
-    }*/
-    
-    // don't expand region nodes
-    if (Object.keys(regionInf).includes(d.name)){
-        return
-    }
-    
-    if ((path[path.length-1].name==d.name)){
+              // Reset the graph for the parent
+              _p = parent_name.replace(/\s/g, '')
+              active = _p
 
-      curr_orbit = d["orbit"]
-      parent_idx = path.length -2
+              //Reset the  ontick handler
+              orbits[_p].on("tick", function() {
+                  base_location = d3.select("#"+_p)
 
-      parent_name = path[parent_idx].name
-      console.log(parent)
-      console.log("path", path)
-      n = d.name.replace(/\s/g, '')
-      // d3.select("#"+n).remove()
+                  base_location.selectAll("g.node")
+                    .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"});
 
-      // orbits[n] = undefined
-      delete orbits[n]
+                   base_location.selectAll("circle.ring")
+                  .attr("cx", function(d) {return d.x})
+                  .attr("cy", function(d) {return d.y});
+                });
 
-      /*
-      parent = d["parent"]
-      while("parent" in parent){
-          parent = parent["parent"]
-      }*/
+              // Refresh the data inside the graph node
+              orbits[_p].nodes(path[parent_idx])
 
+              // Renable the colors
+              d3.selectAll("#"+active+">svg>g.node>circle")
+                  .style("fill", function(d) {return colors(d.depth)})
+              d3.selectAll("#"+active+">svg>circle.ring")
+                  .style("stroke-opacity", 0.15)
 
-      // console.log(parent)
+              // delete the child graph
+              d3.selectAll("#"+n).remove()
+              
+              // restart the graph rotation
+              orbits[_p].start()
 
-      // orbits[active].stop()
-      // orbits[active].clear_tick()
+              d["expanded"] = false
+              // remove the child from the author path
+              path.pop()
+              
+              draw_stats()
+            }
+            else{
+              // Expand the author's node
+            
+              // Handle some bad casess
+              if (active==d.name.replace(/\s/g, '')){
+                console.log("orbit already active")
+                return
+                }
+              else if (d.children == null){
+                console.log("no children")
+                return
+              }
 
-      //drawOrbit(parent)
+              //Clear the current orbit's tick timer
+              orbits[active].clear_tick()
+              
+              // Grey out the parent graph
+              d3.selectAll("#"+active+">svg>g.node>circle")
+                  .style("fill", function(d) {return "MintCream"})
 
-      _p = parent_name.replace(/\s/g, '')
-      active = _p
+              d3.selectAll("#"+active+">svg>circle.ring")
+                  .style("stroke-opacity", 0.05)
 
-      //Reset the on tick handler
-      orbits[_p].on("tick", function() {
-          base_location = d3.select("#"+_p)
+              // draw the new author's orbit
+              drawOrbit(d, "viz")
+              
+              d["expanded"] = true
 
-          base_location.selectAll("g.node")
-            .attr("transform", function(d) {return "translate(" +d.x +"," + d.y+")"});
+            }
+            // d3.select(this).select("circle")
 
-           base_location.selectAll("circle.ring")
-          .attr("cx", function(d) {return d.x})
-          .attr("cy", function(d) {return d.y});
-        });
+            // .transition()
+            //    .duration(2000)
+            //    .style("opacity", 1)
+          }
 
-
-      orbits[_p].nodes(path[parent_idx])
-
-      // Renable the colors
-      d3.selectAll("#"+active+">svg>g.node>circle")
-          .style("fill", function(d) {return colors(d.depth)})
-      d3.selectAll("#"+active+">svg>circle.ring")
-          .style("stroke-opacity", 0.15)
-
-      // delete the expanded graph and start the other
-      d3.selectAll("#"+n).remove()
-      orbits[_p].start()
-
-      d["expanded"] = false
-      path.pop()
-      draw_stats()
-
-
-    }
-    else{
-
-      // Handle some bad casess
-      if (active==d.name.replace(/\s/g, '')){
-        console.log("orbit already active")
-        return
-        }
-      else if (d.children == null){
-        console.log("no children")
-        return
-      }
-
-      console.log("stop")
-      // orbits[active].stop()
-      // orbits[active].clear_tick()
-
-      orbits[active].clear_tick()
-
-      d["expanded"] = true
-      console.log(d)
-
-      d3.selectAll("#"+active+">svg>g.node>circle")
-          .style("fill", function(d) {return "MintCream"})
-
-      d3.selectAll("#"+active+">svg>circle.ring")
-          .style("stroke-opacity", 0.05)
-
-      drawOrbit(d, "viz")
-    }
-    // d3.select(this).select("circle")
-
-    // .transition()
-    //    .duration(2000)
-    //    .style("opacity", 1)
-  }
-
-    draw_stats()
+  draw_stats()
   return orbit
 
 }
