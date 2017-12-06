@@ -45,19 +45,19 @@ function draw_stats(){
     for(i=1;i<path.length; i++){
         mystr = mystr + " --> " + path[i].name
     }
-    
+
     div = $("<div>").css("position","absolute")
 
     div.append( $("<a>").text(mystr))
     div.append($("<br>"))
     div.append($("<br>"))
 
-    div.append( $("<a>").text(path[0].name+": Influences"))
+    div.append( $("<a>").text(path[path.length - 1].name+": Influences"))
     div.append($("<br>"))
 
-    console.log(diversity_data[path[0].name])
+    console.log(diversity_data[path[path.length - 1].name])
 
-    region_stats = diversity_data[path[0].name]["byRegion"]
+    region_stats = diversity_data[path[path.length - 1].name]["byRegion"]
     keys = Object.keys(region_stats)
     keys = keys.sort(function (a,b){return region_stats[b] - region_stats[a] })
 
@@ -69,7 +69,7 @@ function draw_stats(){
     }
 
     $("#stats").html(div)
-    
+
 }
 
 function get_active_name(name){
@@ -189,7 +189,7 @@ function makeViz() {
 
               var item = d.target.innerText;
               document.getElementById("personMenuButton").innerText = item
-              
+
                if (get_active_name(item) == active){
                    console.log("Person CLICK Evt already active", item)
                    return
@@ -222,11 +222,11 @@ function makeViz() {
   d3.json("out.json", function(data) {
       root_data_all = data
     });
-   
+
   d3.json("diversity.json", function(_data) {
            diversity_data = _data
            });
-    
+
 
 }
 
@@ -368,7 +368,7 @@ function drawOrbit(__data, parent) {
             }
             orbits[active].stop();
 
-            d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
+            d3.select(this).append("text").attr("id","pname").text(d.name).style("text-anchor", "middle").attr("y", 35);
             d3.select(this).select("circle").style("stroke", "grey").style("stroke-width", 3);
           }
 
@@ -381,7 +381,7 @@ function drawOrbit(__data, parent) {
             }
 
             orbits[active].start();
-            d3.selectAll("text").remove();
+            d3.selectAll("#pname").remove();
             d3.selectAll("g.node > circle").style("stroke", "none").style("stroke-width", 0);
           }
 
@@ -413,7 +413,7 @@ function drawOrbit(__data, parent) {
 
             if (path[path.length-1].name==d.name){
              // Collapse the current viewed author and go backward one step
-             
+
               n = get_active_name(d.name)
 
               parent_idx = path.length -2
@@ -443,9 +443,29 @@ function drawOrbit(__data, parent) {
 
               // Renable the colors
               d3.selectAll("#"+active+">svg>g.node>circle")
-                  .style("fill", function(d) {return colors(d.depth)})
+                  .style("fill", function(d) {
+                    if ((d.depth) == 1) {
+                      return "#4DB6AC";
+                      //return colors(d.depth)})
+                    }else {
+                      return "#7E57C2";
+                    }
+                    // return colors(d.depth)
+                  })
               d3.selectAll("#"+active+">svg>circle.ring")
                   .style("stroke-opacity", 0.15)
+
+              d3.selectAll("#"+active+">svg>g>text")
+                      .style("visibility", "visible")
+
+              // d3.selectAll("#"+active+">svg>g.node>circle").append("text")
+              //   .style("text-anchor", "middle")
+              //   .attr("y", 35)
+              //   .text(function(d) {
+              //     if ((d.depth) == 1 || (d.depth) == 0) {
+              //       return d.name;
+              //     }
+              //   })
 
               // delete the child graph
               d3.selectAll("#"+n).remove()
@@ -478,12 +498,17 @@ function drawOrbit(__data, parent) {
               // Grey out the parent graph
               circles = "#"+active+">svg>g.node>circle"
               console.log(circles)
-              
+
               d3.selectAll(circles)
                   .style("fill", function(d) {return "MintCream"})
+                  .transition()
+                  .duration(250)
 
               d3.selectAll("#"+active+">svg>circle.ring")
                   .style("stroke-opacity", 0.05)
+
+              d3.selectAll("#"+active+">svg>g>text")
+                      .style("visibility", "hidden")
 
               // draw the new author's orbit
               drawOrbit(d, "viz")
@@ -529,11 +554,14 @@ function drawOrbit(__data, parent) {
 
 
 </script>
-<body onload="makeViz()">
+<body onload="makeViz()" style="background-color: #ECEFF1";>
 <div class="container">
   <div class="row">
       <div class="col-12">
         <h1 class="text-center" style="color:#5E35B1; padding-top: 12px";>Ripple of Influence</h1>
+      </div>
+       <div class="col-12">
+        <h2 class="text-center" style="color:#BDBDBD; padding-top: 12px";>Select a Region and Philosopher to search for Influence</h2>
       </div>
     </div>
   <div class="row justify-content-center" style="padding-top: 40px">
@@ -555,13 +583,12 @@ function drawOrbit(__data, parent) {
         </div>
       </div>
     </div>
+  </div>
 
-
-   <div class="col">
-       <div id="stats"></div>
-
+  <div style="padding-top: 15px"; class="col">
+    <div id="stats"></div>
     <div id="viz"></div>
-   </div>
+  </div>
 </div>
 <footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
